@@ -1,0 +1,129 @@
+@startuml
+ title Sistema de Punto de Venta para Comercios Locales
+ skinparam classAttributeIconSize 0
+ abstract class Usuario {
+ - idUsuario: int
+ - nombre: String
+ - username: String
+ - passwordHash: String
+ - activo: boolean
+ + obtenerRol(): Rol
+ + obtenerPermisos(): Set<Permiso>
+ + tienePermiso(permiso: Permiso): boolean
+ }
+ class Administrador {
+ + obtenerRol(): Rol
+ + obtenerPermisos(): Set<Permiso>
+ }
+ class Cajero {
+ + obtenerRol(): Rol
+ + obtenerPermisos(): Set<Permiso>
+ }
+ class Categoria {
+ - idCategoria: int
+ - nombre: String
+ - descripcion: String
+ }
+ abstract class Producto {
+ - idProducto: int
+ - codigo: String
+ - nombre: String
+ - precio: BigDecimal
+ - stock: int
+ - stockMinimo: int
+ - activo: boolean
+ - categoria: Categoria
+ + calcularPrecioFinal(fechaVenta: LocalDate): BigDecimal
+ + puedeVenderse(fechaVenta: LocalDate): boolean
+ + tieneStock(cantidad: int): boolean
+ + estaEnStockMinimo(): boolean
+ }
+ class ProductoPerecedero {
+ - fechaVencimiento: LocalDate
+ + calcularPrecioFinal(fechaVenta: LocalDate): BigDecimal
+ + puedeVenderse(fechaVenta: LocalDate): boolean
+ }
+ class ProductoNoPerecedero {
+ + calcularPrecioFinal(fechaVenta: LocalDate): BigDecimal
+ + puedeVenderse(fechaVenta: LocalDate): boolean
+ }
+ class Cliente {
+ - idCliente: int
+ - nombre: String
+ - nit: String
+ - telefono: String
+ }
+ class Venta {
+ - idVenta: int
+ - fecha: LocalDateTime
+ - usuario: Usuario
+ - cliente: Cliente
+ - metodoPago: MetodoPago
+ - total: BigDecimal
+ - detalles: ArrayList<DetalleVenta>
+ + agregarDetalle(producto: Producto, cantidad: int): void
+ + quitarDetalle(idProducto: int): void
+ + obtenerDetalles(): List<DetalleVenta>
+ + calcularTotal(): BigDecimal
+ + {static} reconstruir(id: int, fecha: LocalDateTime, usuario: Usuario, cliente: Cliente, metodo: MetodoPago, filas: List<DetalleGuardado>): Venta
+ }
+ class DetalleVenta {
+ - idDetalleVenta: int
+ - producto: Producto
+ - cantidad: int
+ - precioUnitario: BigDecimal
+ - subtotal: BigDecimal
+ ~ DetalleVenta(id: int, producto: Producto, cantidad: int, precio: BigDecimal)
+ + calcularSubtotal(): BigDecimal
+ }
+ enum Rol {
+ ADMINISTRADOR
+ CAJERO
+ }
+ enum MetodoPago {
+ EFECTIVO
+ TARJETA
+ }
+ enum Permiso {
+ GESTIONAR_USUARIOS
+ GESTIONAR_PRODUCTOS
+ GESTIONAR_CATEGORIAS
+ CONSULTAR_PRODUCTOS
+ REGISTRAR_VENTAS
+ CONSULTAR_VENTAS_PROPIAS
+ CONSULTAR_TODAS_LAS_VENTAS
+ }
+ Usuario <|-- Administrador
+ Usuario <|-- Cajero
+ Producto <|-- ProductoPerecedero
+ Producto <|-- ProductoNoPerecedero
+ Categoria "1" o-- "0..*" Producto : clasifica
+ Usuario "1" -- "0..*" Venta : registra
+ Cliente "1" -- "0..*" Venta : compra
+ Venta "1" *-- "0..*" DetalleVenta : contiene
+ DetalleVenta "0..*" --> "1" Producto : referencia
+ Usuario ..> Rol
+ Usuario ..> Permiso
+ Venta ..> MetodoPago
+ note right of Venta
+   Preparación: 0..* detalles; persistencia: 1..*.
+   Confirmada: no se agregan ni quitan detalles.
+   DetalleGuardado es un record auxiliar de reconstrucción.
+ end note
+ note bottom of ProductoPerecedero
+   Vencido: no vendible.
+   De 0 a 3 días inclusive: precio * 0.90.
+   HALF_UP, 2 decimales, mínimo Q0.01.
+ end note
+ note bottom of DetalleVenta
+   Conserva precioUnitario aplicado.
+   subtotal = cantidad * precioUnitario.
+ end note
+ note top of Categoria
+   No se elimina si tiene productos asociados.
+ end note
+ note left of Usuario
+   Getters y constructores públicos de entidades
+   omitidos para legibilidad; atributos privados.
+ end note
+@enduml
