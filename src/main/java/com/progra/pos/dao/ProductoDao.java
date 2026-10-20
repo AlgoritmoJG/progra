@@ -17,6 +17,18 @@ public final class ProductoDao {
             campos(ps,p); ps.setInt(10,Validacion.positivo(p.getIdProducto(),"Id")); Jdbc.uno(ps.executeUpdate());
         } catch (SQLException e) { throw new AccesoDatosException(e); }
     }
+    public void actualizarSiVigente(Producto nuevo, Producto anterior) {
+        if (nuevo.getIdProducto() != anterior.getIdProducto()) throw new IllegalArgumentException("Los productos no coinciden.");
+        // Comparación optimista: una venta o edición concurrente obliga a recargar, sin sobrescribir existencias.
+        String sql = "UPDATE productos SET codigo=?,nombre=?,precio=?,stock=?,stock_minimo=?,activo=?,categoria_id=?,tipo=?,fecha_vencimiento=? WHERE id_producto=? AND codigo=? AND nombre=? AND precio=? AND stock=? AND stock_minimo=? AND activo=? AND categoria_id=? AND tipo=? AND fecha_vencimiento <=> ?";
+        try (Connection c = Conexion.abrir(); PreparedStatement ps = c.prepareStatement(sql)) {
+            campos(ps,nuevo); ps.setInt(10,Validacion.positivo(nuevo.getIdProducto(),"Id"));
+            ps.setString(11,anterior.getCodigo()); ps.setString(12,anterior.getNombre()); ps.setBigDecimal(13,anterior.getPrecio()); ps.setInt(14,anterior.getStock()); ps.setInt(15,anterior.getStockMinimo()); ps.setBoolean(16,anterior.isActivo()); ps.setInt(17,anterior.getCategoria().getIdCategoria());
+            ps.setString(18,anterior instanceof ProductoPerecedero ? "PERECEDERO" : "NO_PERECEDERO");
+            if (anterior instanceof ProductoPerecedero p) ps.setDate(19,Date.valueOf(p.getFechaVencimiento())); else ps.setNull(19,Types.DATE);
+            if (ps.executeUpdate() != 1) throw new IllegalArgumentException("El producto cambió mientras lo editaba. Actualice la tabla y vuelva a intentarlo.");
+        } catch (SQLException e) { throw new AccesoDatosException(e); }
+    }
     private void campos(PreparedStatement ps, Producto p) throws SQLException {
         ps.setString(1,p.getCodigo()); ps.setString(2,p.getNombre()); ps.setBigDecimal(3,p.getPrecio()); ps.setInt(4,p.getStock()); ps.setInt(5,p.getStockMinimo()); ps.setBoolean(6,p.isActivo()); ps.setInt(7,Validacion.positivo(p.getCategoria().getIdCategoria(),"Categoría"));
         if (p instanceof ProductoPerecedero perecedero) { ps.setString(8,"PERECEDERO"); ps.setDate(9,Date.valueOf(perecedero.getFechaVencimiento())); }

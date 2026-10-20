@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <displayName>Ejecutar interfaz Swing</displayName>
+        <goals><goal>process-classes</goal><goal>exec:exec@escritorio</goal></goals>
+    </action>
+</actions>

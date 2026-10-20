@@ -39,9 +39,22 @@ Este checklist vincula evidencia con los criterios oficiales; no predice una not
 | Conceptos del curso — 40 % | POO, ArrayList, MVC, JDBC, PreparedStatement y manejo de excepciones. |
 | Documentación y defensa — 20 % | E-R, SQL, guía de una página, guion y ejercicios por bloque. |
 
-## Fase 3 — pendiente de confirmación
-- [ ] Login y menú Swing según rol.
-- [ ] Productos, categorías, Caja, historial y usuarios; clientes desde Caja.
-- [ ] JDBC fuera del hilo de eventos con SwingWorker.
-- [ ] Validación funcional de pantallas.
-- [ ] Ensayo: 3 minutos de demo y 7 de preguntas/cambio de código.
+## Fase 3 — interfaz y preparación de defensa
+- [x] Login Swing y menú según rol; administrador inicial desde Login.
+- [x] Productos, categorías, Caja, historial y usuarios; clientes desde Caja.
+- [x] Tablas de consulta, formularios validados y selección correcta al ordenar filas.
+- [x] JDBC y BCrypt fuera del hilo de eventos, usando SwingWorker.
+- [x] Mensajes de error, estado de operación y protección contra doble clic.
+- [x] Confirmación antes de borrar, vaciar o salir con carrito.
+- [x] Protección contra sobrescribir stock desde un formulario desactualizado.
+- [x] Pruebas gráficas con Robot y MySQL real; capturas de ventanas ejecutadas.
+- [x] Guion de 3 minutos de demo y 7 minutos de preguntas/cambio de código.
+- [x] Preguntas con respuestas y modificaciones guiadas por bloque documental.
+- [ ] Ejecutar en el NetBeans 31 del estudiante y verificar su versión de MySQL.
+- [ ] Grabar evidencia y practicar personalmente las modificaciones en vivo.
+
+| Criterio | Evidencia |
+|---|---|
+| Funcionamiento técnico — 40 % | Pantallas Swing conectadas a controladores y MySQL; pruebas gráficas y de transacción. |
+| Conceptos del curso — 40 % | MVC, POO, ArrayList, eventos, SwingWorker y selección de filas con modelo/vista. |
+| Documentación y defensa — 20 % | Guía de pantallas/ejecución, capturas, guion cronometrado y ejercicios. |
