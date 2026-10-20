@@ -21,6 +21,9 @@ public final class CatalogoController {
     public Producto buscarProducto(int id) { sesion.exigir(Permiso.CONSULTAR_PRODUCTOS); return productos.buscar(id); }
     public int crearProducto(Producto p) { sesion.exigir(Permiso.GESTIONAR_PRODUCTOS); return productos.crear(p); }
     public void actualizarProducto(Producto p) { sesion.exigir(Permiso.GESTIONAR_PRODUCTOS); productos.actualizar(p); }
+    public void actualizarProductoSiVigente(Producto nuevo, Producto anterior) {
+        sesion.exigir(Permiso.GESTIONAR_PRODUCTOS); productos.actualizarSiVigente(nuevo,anterior);
+    }
     public void eliminarProducto(int id) { sesion.exigir(Permiso.GESTIONAR_PRODUCTOS); productos.eliminar(id); }
     // Caja permite registrar y corregir clientes; Consumidor Final está protegido en el DAO.
     public ArrayList<Cliente> listarClientes() { sesion.exigir(Permiso.REGISTRAR_VENTAS); return clientes.listar(); }

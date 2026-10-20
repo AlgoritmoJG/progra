@@ -1,5 +1,7 @@
 # Evidencia de validación de las fases 1 y 2
 
+Documento de la entrega anterior. La interfaz Swing y las pruebas adicionales están en [validación de Fase 3](../fase3/validacion.md).
+
 ## Entorno ejecutado
 - Linux; OpenJDK Temurin 25.0.4.1, compilación con release 21.
 - Maven 3.9.11, Connector/J 9.3.0, jbcrypt 0.4.

@@ -150,6 +150,17 @@ class MySqlTest {
         v.quitar(id); assertTrue(v.verCarrito().isEmpty());
         v.agregar(id,1); v.confirmar(clienteId,MetodoPago.TARJETA); assertTrue(v.verCarrito().isEmpty());
     }
+    @Test void edicionGraficaNoSobrescribeStockCambiadoPorVenta() {
+        int id = crear("EDICION",5); Producto anterior = admin.buscarProducto(id);
+        vender(id,1);
+        Producto editado = producto(id,"EDICION",5,new BigDecimal("12.00"));
+        assertThrows(IllegalArgumentException.class,() -> admin.actualizarProductoSiVigente(editado,anterior));
+        assertEquals(4,admin.buscarProducto(id).getStock());
+        assertEquals(new BigDecimal("10.00"),admin.buscarProducto(id).getPrecio());
+        Producto vigente = admin.buscarProducto(id);
+        admin.actualizarProductoSiVigente(producto(id,"EDICION",4,new BigDecimal("12.00")),vigente);
+        assertEquals(new BigDecimal("12.00"),admin.buscarProducto(id).getPrecio());
+    }
     @Test void checkMySqlBloqueaStockNegativo() throws Exception {
         int id = crear("A",1);
         try (Connection c = Conexion.abrir(); PreparedStatement ps = c.prepareStatement("UPDATE productos SET stock=-1 WHERE id_producto=?")) {
